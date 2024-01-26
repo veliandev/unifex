@@ -34,8 +34,8 @@ defmodule Unifex.CodeGenerator.BaseTypes.List do
   def generate_destruction(name, ctx) do
     ~g"""
     if(#{name} != NULL) {
-      for(unsigned int i = 0; i < #{name}_length; i++) {
-        #{BaseType.generate_destruction(ctx.subtype, :"#{name}[i]", ctx.generator, ctx)}
+      for(unsigned int #{ctx.subtype}_iter = 0; #{ctx.subtype}_iter < #{name}_length; #{ctx.subtype}_iter++) {
+        #{BaseType.generate_destruction(ctx.subtype, :"#{name}[#{ctx.subtype}_iter]", ctx.generator, ctx)}
       }
       unifex_free(#{name});
     }
@@ -52,10 +52,10 @@ defmodule Unifex.CodeGenerator.BaseTypes.List do
       ~g"""
       ({
         ERL_NIF_TERM list = enif_make_list(env, 0);
-        for(int i = #{name}_length-1; i >= 0; i--) {
+        for(int #{ctx.subtype}_iter = #{name}_length-1; #{ctx.subtype}_iter >= 0; #{ctx.subtype}_iter--) {
           list = enif_make_list_cell(
             env,
-            #{BaseType.generate_arg_serialize(ctx.subtype, :"#{name}[i]", ctx.generator, ctx)},
+            #{BaseType.generate_arg_serialize(ctx.subtype, :"#{name}[#{ctx.subtype}_iter]", ctx.generator, ctx)},
             list
           );
         }
